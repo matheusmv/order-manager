@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,8 +26,10 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping("/customers")
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public ResponseEntity<List<Customer>> getAllCustomers() {
+        var customers = customerService.getAllCustomers();
+
+        return ResponseEntity.ok().body(customers);
     }
 
     @GetMapping("/customer/{id}")
@@ -36,8 +40,13 @@ public class CustomerController {
     }
 
     @PostMapping("/customer")
-    public Customer createCustomer(@Valid @RequestBody Customer customer) {
-        return customerService.createCustomer(customer);
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer,
+                                                   HttpServletRequest request) {
+        var newCustomer = customerService.createCustomer(customer);
+
+        return ResponseEntity
+                .created(URI.create(request.getRequestURI() + "/" + newCustomer.getId()))
+                .body(newCustomer);
     }
 
     @PutMapping("/customer/{id}")
