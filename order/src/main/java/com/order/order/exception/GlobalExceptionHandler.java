@@ -11,6 +11,24 @@ import java.time.Instant;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardError> resourceNotFoundException(ResourceNotFoundException exception,
+                                                                   HttpServletRequest request) {
+        var status = HttpStatus.NOT_FOUND;
+        var error = getStandardError(exception, request, status);
+
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<StandardError> databaseException(DatabaseException exception,
+                                                           HttpServletRequest request) {
+        var status = HttpStatus.BAD_REQUEST;
+        var error = getStandardError(exception, request, status);
+
+        return ResponseEntity.status(status).body(error);
+    }
+
     private StandardError getStandardError(RuntimeException exception,
                                            HttpServletRequest request,
                                            HttpStatus status) {
@@ -21,14 +39,5 @@ public class GlobalExceptionHandler {
                 .message(exception.getMessage())
                 .path(request.getRequestURI())
                 .build();
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<StandardError> resourceNotFoundException(ResourceNotFoundException exception,
-                                                                   HttpServletRequest request) {
-        var status = HttpStatus.NOT_FOUND;
-        var error = getStandardError(exception, request, status);
-
-        return ResponseEntity.status(status).body(error);
     }
 }

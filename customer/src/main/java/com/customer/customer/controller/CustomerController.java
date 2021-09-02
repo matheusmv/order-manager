@@ -3,6 +3,7 @@ package com.customer.customer.controller;
 import com.customer.customer.model.Customer;
 import com.customer.customer.service.CustomerService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,52 +13,53 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
-@AllArgsConstructor
+@RequestMapping("/api/v1/customers")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class CustomerController {
 
     private final CustomerService customerService;
 
-    @GetMapping("/customers")
+    @GetMapping
     public ResponseEntity<List<Customer>> getAllCustomers() {
         var customers = customerService.getAllCustomers();
 
         return ResponseEntity.ok().body(customers);
     }
 
-    @GetMapping("/customer/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable(value = "id") Long customerId) {
         var customer = customerService.getCustomerById(customerId);
 
         return ResponseEntity.ok().body(customer);
     }
 
-    @PostMapping("/customer")
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer,
-                                                   HttpServletRequest request) {
-        var newCustomer = customerService.createCustomer(customer);
+    @PostMapping
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
 
-        return ResponseEntity
-                .created(URI.create(request.getRequestURI() + "/" + newCustomer.getId()))
-                .body(newCustomer);
+        var newCustomer = customerService.createCustomer(customer);
+        var uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newCustomer.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(newCustomer);
     }
 
-    @PutMapping("/customer/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable(value = "id") Long customerId,
-                                                   @Valid @RequestBody Customer customerDetails) {
+                                                   @RequestBody Customer customerDetails) {
         var customer = customerService.updateCustomer(customerId, customerDetails);
 
         return ResponseEntity.ok(customer);
     }
 
-    @DeleteMapping("/customer/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable(value = "id") Long customerId) {
         customerService.deleteCustomer(customerId);
 

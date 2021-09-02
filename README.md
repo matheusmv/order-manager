@@ -2,10 +2,10 @@
 
 Serviços para gerenciar pedidos utilizando Spring Cloud
 
- - [Eureka](https://cloud.spring.io/spring-cloud-netflix/reference/html/)
- - [Spring Boot Admin](https://codecentric.github.io/spring-boot-admin/current/)
- - [Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
+## Serviços
 
-![wallborad](spring-boot-admin-wallboard.png)
+ - customer-service: microserviço responsável por armazenar os dados (nome, endereço) dos clientes;
 
-![applications](spring-boot-admin-applications.png)
+ - order-service: microserviço responsável por armazenar os dados de pedidos dos clientes;
+
+ - delivery-service: microserviço responsável por armazenar os dados das entregas;

@@ -1,8 +1,10 @@
 package com.delivery.delivery.controller;
 
+import com.delivery.delivery.dto.DeliveryDTO;
 import com.delivery.delivery.model.Delivery;
 import com.delivery.delivery.service.DeliveryService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,27 +21,27 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
-@AllArgsConstructor
+@RequestMapping("/api/v1/deliveries")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-    @GetMapping("/delivery")
+    @GetMapping
     public ResponseEntity<List<Delivery>> getAllDeliveries() {
         var deliveries = deliveryService.getAllDeliveries();
 
         return ResponseEntity.ok().body(deliveries);
     }
 
-    @GetMapping("/delivery/{id}")
-    public ResponseEntity<Delivery> getDeliveryById(@PathVariable(value = "id") Long deliveryId) {
-        var delivery = deliveryService.getDeliveryById(deliveryId);
+    @GetMapping("/{id}")
+    public ResponseEntity<DeliveryDTO> getDeliveryById(@PathVariable(value = "id") Long deliveryId) {
+        var delivery = deliveryService.getDetailedDelivery(deliveryId);
 
         return ResponseEntity.ok().body(delivery);
     }
 
-    @PostMapping("/delivery")
+    @PostMapping
     public ResponseEntity<Delivery> createDelivery(@Valid @RequestBody Delivery delivery,
                                                    HttpServletRequest request) {
         var newDelivery = deliveryService.createDelivery(delivery);
@@ -49,7 +51,7 @@ public class DeliveryController {
                 .body(newDelivery);
     }
 
-    @PutMapping("/delivery/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Delivery> updateDelivery(@PathVariable(value = "id") Long deliveryId,
                                                    @Valid @RequestBody Delivery deliveryDetails) {
         var delivery = deliveryService.updateDelivery(deliveryId, deliveryDetails);
@@ -57,7 +59,7 @@ public class DeliveryController {
         return ResponseEntity.ok(delivery);
     }
 
-    @DeleteMapping("/delivery/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDelivery(@PathVariable(value = "id") Long deliveryId) {
         deliveryService.deleteDelivery(deliveryId);
 
