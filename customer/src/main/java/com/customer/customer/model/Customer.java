@@ -1,36 +1,36 @@
 package com.customer.customer.model;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "tb_customer")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @OneToOne(
+            mappedBy = "customer",
+            cascade = CascadeType.ALL,
+            optional = false
+    )
+    private Address address;
 }

@@ -1,11 +1,8 @@
 package com.order.order.model;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,25 +12,22 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "tb_order")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "customer_id", nullable = false)
+    @Column(nullable = false)
     private Long customerId;
 
-    @Column(name = "description", nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "value", nullable = false)
-    private Long value;
+    @Column(nullable = false)
+    private Double value;
 }

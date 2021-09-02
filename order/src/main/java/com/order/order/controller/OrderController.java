@@ -1,5 +1,6 @@
 package com.order.order.controller;
 
+import com.order.order.dto.OrderDTO;
 import com.order.order.model.Order;
 import com.order.order.service.OrderService;
 import lombok.AllArgsConstructor;
@@ -12,52 +13,53 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/orders")
 @AllArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
         var orders = orderService.getAllOrders();
 
         return ResponseEntity.ok().body(orders);
     }
 
-    @GetMapping("/orders/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable(value = "id") Long orderId) {
-        var order = orderService.getOrderById(orderId);
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable(value = "id") Long orderId) {
+        var order = orderService.getDetailedOrder(orderId);
 
         return ResponseEntity.ok().body(order);
     }
 
-    @PostMapping("/order")
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order,
-                                             HttpServletRequest request) {
-        var newOrder = orderService.createOrder(order);
+    @PostMapping
+    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
 
-        return ResponseEntity
-                .created(URI.create(request.getRequestURI() + "/" + newOrder.getId()))
-                .body(newOrder);
+        var newOrder = orderService.createOrder(order);
+        var uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newOrder.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(newOrder);
     }
 
-    @PutMapping("/order/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable(value = "id") Long orderId,
-                                             @Valid @RequestBody Order orderDetails) {
+                                             @RequestBody Order orderDetails) {
         var order = orderService.updateOrder(orderId, orderDetails);
 
         return ResponseEntity.ok(order);
     }
 
-    @DeleteMapping("/customer/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable(value = "id") Long orderId) {
         orderService.deleteOrder(orderId);
 
