@@ -11,3 +11,8 @@ Serviços para gerenciar pedidos utilizando Spring Cloud
  - order-service: microserviço responsável por armazenar os dados de pedidos dos clientes;
 
  - delivery-service: microserviço responsável por armazenar os dados das entregas;
+
+## TODO
+
+ - [ ] Corrigir os métodos POST e PUT do serviço de entregas;
+ - [ ] Implementar API Gateway;
