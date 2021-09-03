@@ -6,6 +6,6 @@ spring:
     name: eureka-server
 
 eureka:
-  cliente:
+  client:
     register-with-eureka: false
     fetch-registry: false
