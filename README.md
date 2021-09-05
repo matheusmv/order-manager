@@ -16,3 +16,4 @@ Serviços para gerenciar pedidos utilizando Spring Cloud
 
  - [ ] Corrigir os métodos POST e PUT do serviço de entregas;
  - [ ] Implementar API Gateway;
+ - [ ] Implementar Config Server;
