@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Component
 @FeignClient(
-        url = "localhost:8082",
         name = "order-service",
         path = "/api/v1/orders"
 )
