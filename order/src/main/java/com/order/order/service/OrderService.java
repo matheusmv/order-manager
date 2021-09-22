@@ -12,7 +12,7 @@ public interface OrderService {
 
     Order find(Long id);
 
-    OrderDTO findWithCustomer(Long id);
+    OrderDTO findWithCustomerDetails(Long id);
 
     Page<Order> find(Integer page, Integer linesPerPage, String direction, String orderBy);
 

@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional(readOnly = true)
-    public OrderDTO findWithCustomer(Long orderId) {
+    public OrderDTO findWithCustomerDetails(Long orderId) {
         var order = find(orderId);
         var customer = customerFeignClient.getById(order.getCustomerId()).getBody();
 
