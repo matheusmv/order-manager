@@ -1,7 +1,7 @@
 package com.customer.customer.controller;
 
 import com.customer.customer.model.Customer;
-import com.customer.customer.service.impl.CustomerServiceImpl;
+import com.customer.customer.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class CustomerController {
 
-    private final CustomerServiceImpl customerService;
+    private final CustomerService customerService;
 
     @GetMapping
     public ResponseEntity<Page<Customer>> getAllCustomers(
