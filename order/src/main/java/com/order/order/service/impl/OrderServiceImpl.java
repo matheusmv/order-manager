@@ -2,8 +2,11 @@ package com.order.order.service.impl;
 
 import com.order.order.dto.OrderDTO;
 import com.order.order.exception.DatabaseException;
+import com.order.order.exception.DeliveryRequestException;
 import com.order.order.exception.ResourceNotFoundException;
 import com.order.order.feignclients.CustomerFeignClient;
+import com.order.order.feignclients.DeliveryFeignClient;
+import com.order.order.model.Delivery;
 import com.order.order.model.Order;
 import com.order.order.repository.OrderRepository;
 import com.order.order.service.OrderService;
@@ -27,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final CustomerFeignClient customerFeignClient;
+    private final DeliveryFeignClient deliveryFeignClient;
 
     public Page<Order> find(Integer page, Integer linesPerPage, String direction, String orderBy) {
         var pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
@@ -52,7 +56,25 @@ public class OrderServiceImpl implements OrderService {
     public Order create(Order order) {
         checkIfTheCustomerIdExists(order.getCustomerId());
 
-        return orderRepository.save(order);
+        var newOrder = orderRepository.save(order);
+
+        requestDelivery(newOrder.getId(), newOrder.getCustomerId());
+
+        return newOrder;
+    }
+
+    private void requestDelivery(Long orderId, Long customerId) {
+        try {
+            var newDelivery = new Delivery();
+
+            newDelivery.setOrderId(orderId);
+            newDelivery.setCustomerId(customerId);
+            newDelivery.setShippingValue(5.0);  // TODO: improve delivery cost calculation
+
+            deliveryFeignClient.createDelivery(newDelivery);
+        } catch (FeignException exception) {
+            throw new DeliveryRequestException("Error requesting delivery");
+        }
     }
 
     private void checkIfTheCustomerIdExists(Long customerId) {
@@ -78,6 +100,7 @@ public class OrderServiceImpl implements OrderService {
                 .ifPresent(customerId -> {
                     checkIfTheCustomerIdExists(customerId);
                     order.setCustomerId(customerId);
+                    requestDeliveryUpdate(order.getId(), order.getCustomerId());
                 });
 
         Optional.ofNullable(orderDetails.getDescription())
@@ -87,6 +110,20 @@ public class OrderServiceImpl implements OrderService {
         Optional.ofNullable(orderDetails.getValue())
                 .filter(value -> value > 0)
                 .ifPresent(order::setValue);
+    }
+
+    private void requestDeliveryUpdate(Long orderId, Long customerId) {
+        try {
+            var delivery = deliveryFeignClient.getDeliveryByOrderId(orderId).getBody();
+
+            if (Objects.nonNull(delivery)) {
+                delivery.setCustomerId(customerId);
+
+                deliveryFeignClient.updateDelivery(delivery.getId(), delivery);
+            }
+        } catch (FeignException exception) {
+            throw new DeliveryRequestException("Error requesting delivery update");
+        }
     }
 
     public void delete(Long orderId) {

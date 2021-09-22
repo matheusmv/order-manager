@@ -12,6 +12,10 @@ public interface DeliveryService {
 
     Delivery find(Long id);
 
+    Delivery findByOrderId(Long id);
+
+    Delivery findByCustomerId(Long id);
+
     DeliveryDTO findWithOrderAndCustomerDetails(Long id);
 
     Page<Delivery> find(Integer page, Integer linesPerPage, String direction, String orderBy);

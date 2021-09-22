@@ -38,6 +38,18 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Transactional(readOnly = true)
+    public Delivery findByOrderId(Long id) {
+        return deliveryRepository.findByOrderId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found for this order id :: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Delivery findByCustomerId(Long id) {
+        return deliveryRepository.findByCustomerId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found for this customer id :: " + id));
+    }
+
+    @Transactional(readOnly = true)
     public DeliveryDTO findWithOrderAndCustomerDetails(Long deliveryId) {
         var delivery = find(deliveryId);
         var order = orderFeignClient.getById(delivery.getOrderId()).getBody();
@@ -45,14 +57,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         return new DeliveryDTO(delivery, order);
     }
 
-    // TODO - when registering a new order create a new delivery
-    // TODO - when registering a new delivery check the order id and the customer id
     @Transactional
     public Delivery create(Delivery delivery) {
         return deliveryRepository.save(delivery);
     }
 
-    // TODO FIX
     @Transactional
     public Delivery update(Long deliveryId, Delivery deliveryDetails) {
         var delivery = find(deliveryId);

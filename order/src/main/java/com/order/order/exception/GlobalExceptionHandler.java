@@ -29,6 +29,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(error);
     }
 
+    @ExceptionHandler(DeliveryRequestException.class)
+    public ResponseEntity<StandardError> deliveryRequestException(DeliveryRequestException exception,
+                                                                  HttpServletRequest request) {
+        var status = HttpStatus.SERVICE_UNAVAILABLE;
+        var error = getStandardError(exception, request, status);
+
+        return ResponseEntity.status(status).body(error);
+    }
+
     private StandardError getStandardError(RuntimeException exception,
                                            HttpServletRequest request,
                                            HttpStatus status) {

@@ -41,7 +41,28 @@ public class DeliveryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DeliveryDTO> getDeliveryById(@PathVariable(value = "id") Long deliveryId) {
+    public ResponseEntity<Delivery> getDeliveryById(@PathVariable(value = "id") Long deliveryId) {
+        var delivery = deliveryService.find(deliveryId);
+
+        return ResponseEntity.ok().body(delivery);
+    }
+
+    @GetMapping("order/{id}")
+    public ResponseEntity<Delivery> getDeliveryByOrderId(@PathVariable(value = "id") Long orderId) {
+        var delivery = deliveryService.findByOrderId(orderId);
+
+        return ResponseEntity.ok().body(delivery);
+    }
+
+    @GetMapping("customer/{id}/")
+    public ResponseEntity<Delivery> getDeliveryByCustomerId(@PathVariable(value = "id") Long customerId) {
+        var delivery = deliveryService.findByCustomerId(customerId);
+
+        return ResponseEntity.ok().body(delivery);
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<DeliveryDTO> getDetailedDeliveryById(@PathVariable(value = "id") Long deliveryId) {
         var delivery = deliveryService.findWithOrderAndCustomerDetails(deliveryId);
 
         return ResponseEntity.ok().body(delivery);
